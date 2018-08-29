@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sy.dao.UserDao">
+	<!-- 目的：为DAO接口方法提供sql语句配置 -->
+	
+
+	<!-- 查询用户和密码进行登录 -->
+	<select id="findByUsername" resultType="User" parameterType="String">
+		select * from user_information where username = #{username}
+			
+	</select>
+	
+	<!-- 增加用户  --> 
+	<insert id="addUser">
+	    
+	    insert into user_information (username,password,telephonenumber,email,likeplace,likestar,idcard)
+	    values
+	    (#{username},#{password},#{telephonenumber},#{email},#{likeplace},#{likestar},#{idcard})
+	
+	</insert> 
+	
+<!-- 	修改密码 -->
+<update id="changepassword">
+update user_information set password=#{1} where username=#{0}
+</update>
+
+<!-- 	  <insert id="addMissingPerson">
+   insert into missingperson_information(MissingPersonName,MissingPersonHigh,sex, MissingDate, MissingPersonForm,
+               MissingPersonPlace,MissingPersonFeature, MissingHappend,other,ContactsName,
+              relationship,telephonenumber,	email, address) 
+     values(#{MissingPersonName},#{MissingPersonHigh},#{sex},#{MissingDate},#{MissingPersonForm}
+     ,#{MissingPersonPlace},#{MissingPersonFeature},#{MissingHappend},#{other}
+     ,#{ContactsName},#{relationship},#{telephonenumber},#{email},#{address})    
+   </insert> -->
+   
+   
+     <insert id="storeVolunteer">
+   insert into volunteer_information(username,name, age,telephonenumber,email,address) 
+     values(#{username},#{name},#{age},#{telephonenumber},#{email},#{address})    
+   </insert>
+	  <insert id="addMissingPerson">
+   insert into missingperson_information(username,MissingPersonName, MissingPersonPic,MissingPersonHigh,MissingPersonSex, MissingDate, MissingPersonForm,
+               MissingPersonPlace,MissingPersonFeature, MissingHappend,other,ContactsName,
+              relationship,telephonenumber,	email, address) 
+     values(#{username},#{MissingPersonName},#{MissingPersonPic},#{MissingPersonHigh},#{MissingPersonSex},#{MissingDate},#{MissingPersonForm}
+     ,#{MissingPersonPlace},#{MissingPersonFeature},#{MissingHappend},#{other}
+     ,#{ContactsName},#{relationship},#{telephonenumber},#{email},#{address})    
+   </insert>
+     <insert id="addTrampPerson"> 
+   insert into trampperson_information(username,TrampPersonPic, TrampPersonName,TrampPersonHigh,TrampPersonSex, TrampPersonPlace, 
+               TrampPersonFeature,other,ContactsName,telephonenumber,email) 
+     values(#{username},#{TrampPersonPic},#{TrampPersonName},#{TrampPersonHigh},#{TrampPersonSex},#{TrampPersonPlace},#{TrampPersonFeature}
+     ,#{other},#{ContactsName},#{telephonenumber},#{email})    
+   </insert>
+   
+   <insert id="storemessage">
+   
+   insert into user_message (username,message)values(#{0},#{1})
+   </insert>
+   
+   <select id="getMessage" resultType="UserMessage">
+    select *from user_message
+   </select>
+   
+   <select id="undel" resultType="UserMessage">
+   select *from user_message where status='未处理'
+   </select>
+   <update id="changeMessage">
+   update user_message set status=#{1} where messageId=#{0} 
+   </update>
+   
+   <select id="findByMissingPersonId" resultType="MissingPerson" parameterType="int">
+   select *from missingperson_information where MissingPersonId=#{id}
+   </select>
+   
+    <select id="findByTrampPersonId" resultType="TrampPerson" parameterType="int">
+   select *from trampperson_information where TrampPersonId=#{id}
+   </select>
+	
+	<select id="findMoreMissingPerson" resultType="MissingPerson">
+	select*from missingperson_information
+	</select>
+	
+		<select id="findMoreTrampPerson" resultType="TrampPerson">
+	select*from Trampperson_information
+	</select>
+	
+			<select id="findAllMessage" resultType="User">
+	select*from user_information
+	</select>
+	
+			<select id="allVolunteer" resultType="Volunteer">
+	select*from volunteer_information
+	</select>
+
+	<select id="findByPage" resultType="MissingPerson">
+           select*from missingperson_information   
+            <if test="start!=null and count!=null">
+                    limit #{start},#{count}
+            </if>
+        </select>
+<!-- 模糊查询	 -->
+	<select id="findBySex" resultType="MissingPerson" parameterType="String">
+		select*from missingperson_information where MissingPersonSex=#{sex}
+	</select>
+	
+	<select id="findByLastName" resultType="MissingPerson" parameterType="String">
+		select*from missingperson_information where MissingPersonName like concat(#{LastName},'%')
+	</select>
+	
+	<select id="findBySexAndLastName" resultType="MissingPerson" >
+	select *from missingperson_information where MissingPersonSex=#{0} and MissingPersonName like concat(#{1},'%')
+	</select>
+<!-- 模糊查询	 -->
+
+	
+	<select id="findByInformation" resultType="User">
+	select*from user_information where username=#{0}and telephonenumber=#{1}and email=#{2} and likeplace=#{3} and likestar=#{4} and idcard=#{5}
+	</select> 
+	
+<!-- 统计 -->
+<select id="totalUserInformation" resultType="int">
+select count(u.username) from user_information u
+</select>
+<select id="totalMissingPersonInformation" resultType="int">
+select count(m.MissingPersonName) from missingPerson_information m
+</select>
+<select id="totalTrampInformation" resultType="int">
+select count(t.TrampPersonName) from trampPerson_information t
+</select>
+<select id="totalMessage" resultType="int">
+select count(u.message) from user_message u
+</select>
+<select id="totalUndelMessage" resultType="int"> 
+select count(u.message) from user_message u where u.status='未处理'
+</select>
+<!-- 统计 -->
+
+<delete id="deleteUser" >
+delete from user_information where userId=#{userId}
+</delete>
+
+<select id="findByUserId" resultType="User">
+select*from user_information where userId=#{userId}
+</select>
+
+	
+	  <update id="changeUserInformation">
+   
+   update user_information set  password=#{password} , idcard=#{idcard} ,telephonenumber=#{telephonenumber}
+   , email=#{email} , likeplace=#{likeplace}, likestar=#{likestar} 
+    where username=#{username} 
+   </update>
+	
+	<update id="changeFamilyInformation"> <!-- 走失儿童 -->
+	 update missingPerson_information set MissingPersonName=#{MissingPersonName},MissingPersonHigh=#{MissingPersonHigh},MissingPersonSex=#{MissingPersonSex},
+	 MissingDate=#{MissingDate},MissingPersonForm=#{MissingPersonForm},MissingPersonPlace=#{MissingPersonPlace},MissingPersonFeature=#{MissingPersonFeature},
+	 MissingHappend=#{MissingHappend},other=#{other},ContactsName=#{ContactsName},relationship=#{relationship},telephonenumber=#{telephonenumber},
+	 email=#{email},address=#{address} where username=#{username}
+	</update> 
+	
+	<update id="changeTrampInformation"> <!-- 流浪乞丐 -->
+	 update trampPerson_information set TrampPersonName=#{TrampPersonName},TrampPersonHigh=#{TrampPersonHigh},TrampPersonSex=#{TrampPersonSex},
+	 TrampPersonPlace=#{TrampPersonPlace},
+	TrampPersonFeature=#{TrampPersonFeature},other=#{other},ContactsName=#{ContactsName},telephonenumber=#{telephonenumber},
+	 email=#{email} where username=#{username}
+	</update> 
+	
+	
+	
+</mapper>	
+
